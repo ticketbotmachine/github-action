@@ -1,0 +1,32 @@
+name: Update concerts.json
+
+on:
+  schedule:
+    - cron: '0 19 * * *'   # 每天 UTC 19:00（即 HKT 03:00）
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install node-fetch@3
+
+      - name: Fetch latest shows
+        run: node scripts/update-shows.js
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/concerts.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update concerts.json"
+          git push
