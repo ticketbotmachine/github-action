@@ -2,7 +2,7 @@
 <html lang="zh-HK">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>ticketkiller · 極速搶票｜按場次收費 · 6 台設備不限次數</title>
 <meta name="description" content="ticketkiller — 覆蓋 Cityline、KKTIX、HKTICKETING、URBTIX、FANTOPIA、Klook 六大平台。按演唱會場次購買使用權，一個場次可綁定 6 台設備，不限搶飛次數。">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -29,9 +29,27 @@
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 <style>
+  /* ============ 基礎 ============ */
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{background:#130917;color:#f5e9f2;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  html{
+    scroll-behavior:smooth;
+    /* 禁止 iOS 橫屏自動放大字體 */
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+    overflow-x:hidden;
+    /* 錨點定位時預留導航高度 */
+    scroll-padding-top:80px;
+  }
+  body{
+    background:#130917;color:#f5e9f2;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    overflow-x:hidden;
+    width:100%;max-width:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg,video,canvas{max-width:100%}
+
+  /* ============ 通用元件 ============ */
   .text-gradient{background:linear-gradient(135deg,#FF4D9D,#B388FF,#FFD54F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
   .glass-deep{background:rgba(19,9,23,.68);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,143,184,.08)}
   .glow-border{border:1px solid rgba(255,77,157,.18);transition:border-color .4s,box-shadow .4s,transform .3s cubic-bezier(.2,0,0,1)}
@@ -48,6 +66,8 @@
   .card-hover:hover{transform:translateY(-10px);box-shadow:0 30px 60px -20px rgba(255,77,157,.25)}
   .pricing-popular{position:relative;border:2px solid #B388FF;transform:scale(1.02);box-shadow:0 0 60px rgba(179,136,255,.2)}
   .pricing-popular::before{content:'⚡ 最受歡迎';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#FF4D9D,#B388FF,#FFD54F);color:#fff;padding:2px 22px;border-radius:40px;font-size:13px;font-weight:700;letter-spacing:.5px;white-space:nowrap;box-shadow:0 8px 24px rgba(255,77,157,.4)}
+
+  /* ============ 動效 ============ */
   .speed-line{position:absolute;height:2px;background:linear-gradient(90deg,transparent,rgba(255,77,157,.5),rgba(255,213,79,.4),transparent);animation:speedLine 8s linear infinite}
   .speed-line:nth-child(1){top:15%;left:-10%;width:30%;animation-delay:0s}
   .speed-line:nth-child(2){top:45%;right:-5%;width:25%;animation-delay:2s}
@@ -78,6 +98,8 @@
   .step-card::after{content:'\f105';font-family:FontAwesome;position:absolute;right:-18px;top:38px;color:rgba(255,143,184,.5);font-size:22px}
   .step-card:last-child::after{display:none}
   @media(max-width:1023px){.step-card::after{display:none}}
+
+  /* ============ 時間軸 / 標籤 ============ */
   .timeline-item{position:relative;padding-left:28px;padding-bottom:30px;border-left:2px solid rgba(255,77,157,.2)}
   .timeline-item:last-child{border-left:2px solid transparent;padding-bottom:0}
   .timeline-item::before{content:'';position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#FF4D9D,#FFD54F);box-shadow:0 0 24px rgba(255,77,157,.6)}
@@ -92,26 +114,38 @@
   .logo-icon:hover{transform:rotate(-4deg) scale(1.04);filter:drop-shadow(0 0 40px rgba(255,77,157,.35))}
   #navInner{transition:padding .3s ease,background .3s ease,box-shadow .3s ease}
   .nav-shrink{padding-top:.5rem!important;padding-bottom:.5rem!important;background:rgba(19,9,23,.95)!important;box-shadow:0 10px 40px -20px rgba(255,77,157,.5)}
+
+  /* ============ WhatsApp 按鈕 ============ */
   .wa-btn{background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 10px 34px rgba(37,211,102,.28);transition:all .3s cubic-bezier(.2,0,0,1)}
   .wa-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 16px 46px rgba(37,211,102,.45)}
   .wa-float{background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 8px 30px rgba(37,211,102,.4);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
   .wa-float:hover{transform:scale(1.12) rotate(-6deg)}
   .wa-float::before{content:'';position:absolute;inset:0;border-radius:9999px;background:rgba(37,211,102,.5);animation:waPulse 2.2s ease-out infinite;z-index:-1}
   @keyframes waPulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.8);opacity:0}}
+
+  /* ============ 進場動畫 ============ */
   .js .reveal{opacity:0;transform:translateY(28px);transition:opacity .75s cubic-bezier(.2,0,0,1),transform .75s cubic-bezier(.2,0,0,1)}
   .js .reveal.visible{opacity:1;transform:none}
+
+  /* ============ 滾動條 ============ */
   ::-webkit-scrollbar{width:6px}
   ::-webkit-scrollbar-track{background:#130917}
   ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#FF4D9D,#B388FF);border-radius:10px}
   .text-shadow-dark{text-shadow:0 4px 30px rgba(0,0,0,.6)}
+
+  /* ============ 骨架屏 ============ */
   .skeleton{background:linear-gradient(90deg,rgba(255,143,184,.05) 25%,rgba(255,77,157,.16) 37%,rgba(255,143,184,.05) 63%);background-size:400% 100%;animation:skeletonShine 1.4s ease infinite}
   @keyframes skeletonShine{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+  /* ============ 資料來源徽章 ============ */
   .source-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:3px 12px;border-radius:20px;font-weight:600;letter-spacing:.3px}
   .source-live{background:rgba(255,213,79,.12);color:#FFE082;border:1px solid rgba(255,213,79,.35)}
   .source-cache{background:rgba(255,150,120,.12);color:#FFB59B;border:1px solid rgba(255,150,120,.3)}
   .source-fallback{background:rgba(255,77,157,.12);color:#FF9DC8;border:1px solid rgba(255,77,157,.35)}
   .source-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:dotPulse 1.6s ease-in-out infinite}
   @keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+  /* ============ 場次時間線折疊 ============ */
   .sale-timeline{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.2,0,0,1),opacity .35s ease;opacity:0}
   .sale-timeline.open{max-height:600px;opacity:1}
   .sale-timeline-inner{padding:12px 0 4px;border-top:1px dashed rgba(255,77,157,.3);margin-top:10px}
@@ -124,11 +158,13 @@
   .toggle-sale:hover{color:#FFD54F}
   .toggle-sale i{transition:transform .3s}
   .toggle-sale.open i{transform:rotate(180deg)}
+
+  /* ============ 光暈裝飾 ============ */
   .joy-glow{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
   .lang-toggle{display:inline-flex;align-items:center;justify-content:center;gap:4px;font-weight:700;letter-spacing:.5px;cursor:pointer}
   .lang-toggle i{font-size:15px}
 
-  /* ===== P0 新增：聯絡浮動按鈕與面板 ===== */
+  /* ============ 聯絡浮動按鈕與面板 ============ */
   .contact-fab{background:linear-gradient(135deg,#12B7F5,#B388FF,#FF4D9D);box-shadow:0 8px 30px rgba(179,136,255,.45);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,background .3s}
   .contact-fab:hover{transform:scale(1.12) rotate(-6deg);box-shadow:0 14px 40px rgba(179,136,255,.6)}
   .contact-fab.active{background:linear-gradient(135deg,#FF4D9D,#B388FF)}
@@ -147,11 +183,157 @@
   .tk-toast.show{opacity:1;transform:translate(-50%,0)}
   .contact-panel input:focus,.contact-panel textarea:focus{border-color:rgba(255,77,157,.5);outline:none}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  @media(max-width:640px){
-    .contact-panel{left:1rem!important;right:1rem!important;width:auto!important;max-height:calc(100vh - 17rem);overflow-y:auto}
+
+  /* ============================================================
+     ★★★ 移動端真實自適應（不採用縮放）★★★
+     ============================================================ */
+
+  /* 平板：適度收緊區塊留白 */
+  @media (max-width:1023px){
+    section.py-24{padding-top:4.5rem;padding-bottom:4.5rem}
   }
+
+  /* 手機：完整重排 */
+  @media (max-width:768px){
+    /* --- 區塊留白 --- */
+    section.py-24{padding-top:3.25rem!important;padding-bottom:3.25rem!important}
+    section.py-20{padding-top:2.75rem!important;padding-bottom:2.75rem!important}
+    section.px-6{padding-left:1rem!important;padding-right:1rem!important}
+    footer.py-12{padding-top:2.5rem!important;padding-bottom:2.5rem!important}
+    footer.px-6{padding-left:1rem!important;padding-right:1rem!important}
+
+    /* --- 英雄區 --- */
+    #top{min-height:auto}
+    #top > .container{
+      padding-top:5.5rem!important;
+      padding-bottom:3.5rem!important;
+      padding-left:1rem!important;
+      padding-right:1rem!important;
+    }
+    #top h1{
+      font-size:clamp(2rem,9.5vw,2.75rem)!important;
+      line-height:1.16;
+      margin-bottom:1.25rem;
+    }
+    #top p{
+      font-size:.95rem!important;
+      line-height:1.65;
+      margin-bottom:1.5rem;
+    }
+    /* 向下箭頭太占位，隱藏 */
+    #top > .absolute.bottom-10{display:none}
+
+    /* --- 按鈕：變成整行可點擊區 --- */
+    .btn-primary,
+    .btn-secondary,
+    .btn-official,
+    .wa-btn{
+      display:block;
+      width:100%;
+      max-width:22rem;
+      margin-left:auto;
+      margin-right:auto;
+      text-align:center;
+      padding-left:1rem!important;
+      padding-right:1rem!important;
+      padding-top:.85rem!important;
+      padding-bottom:.85rem!important;
+      font-size:.95rem!important;
+    }
+
+    /* --- 卡片留白 --- */
+    .glass-deep.p-8{padding:1.35rem!important}
+    .glass-deep.p-7{padding:1.25rem!important}
+    .glass-deep.p-6{padding:1.1rem!important}
+    .rounded-3xl.p-12,
+    .rounded-3xl.p-10,
+    .rounded-3xl.p-8{padding:1.35rem!important}
+
+    /* --- 場次卡 --- */
+    #showsGrid .p-6{padding:1.1rem!important}
+    #showsGrid h4{font-size:1rem!important}
+    #showsGrid ul{font-size:.82rem!important}
+    .sale-row{font-size:11.5px}
+    .sale-row .stage{min-width:auto}
+
+    /* --- 定價卡「最受歡迎」標籤不被裁切 --- */
+    .pricing-popular{transform:none;margin-top:1rem}
+    .pricing-popular::before{font-size:12px;padding:2px 18px;top:-13px}
+
+    /* --- 導航 --- */
+    #navInner{padding-left:1rem!important;padding-right:1rem!important}
+
+    /* --- 浮動按鈕：避免遮擋內容 / 互疊 --- */
+    #contactFab{
+      right:1rem!important;
+      bottom:1rem!important;
+      width:3.25rem!important;
+      height:3.25rem!important;
+    }
+    #backToTop{
+      right:1rem!important;
+      bottom:5rem!important;
+      width:2.75rem!important;
+      height:2.75rem!important;
+    }
+
+    /* --- 聯絡面板：整行鋪滿，不再超寬 --- */
+    .contact-panel{
+      left:1rem!important;
+      right:1rem!important;
+      width:auto!important;
+      max-width:none!important;
+      bottom:5.5rem!important;
+      max-height:calc(100svh - 8rem);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    /* iOS 聚焦時禁止自動放大（表單字級需 ≥16px） */
+    .contact-panel input,
+    .contact-panel textarea{
+      font-size:16px!important;
+      padding-top:.6rem!important;
+      padding-bottom:.6rem!important;
+    }
+    .contact-panel .contact-copy,
+    .contact-panel .contact-send,
+    .contact-panel a{font-size:12.5px}
+
+    /* --- 更新日誌：時間軸左移更貼邊 --- */
+    .timeline-item{padding-left:20px}
+    .timeline-item::before{left:-7px;width:12px;height:12px}
+
+    /* --- Toast --- */
+    .tk-toast{bottom:6rem;font-size:12.5px;padding:9px 18px;max-width:92vw}
+
+    /* --- 禁止 hover 抬升造成的手機殘留位移 --- */
+    .card-hover:hover,
+    .glow-border:hover,
+    .platform-card:hover{transform:none;box-shadow:none}
+    .contact-item:hover{transform:none}
+  }
+
+  /* 極窄屏（≤360px）再收一檔 */
+  @media (max-width:360px){
+    #top h1{font-size:1.85rem!important}
+    section.px-6{padding-left:.75rem!important;padding-right:.75rem!important}
+    .glass-deep.p-8,
+    .glass-deep.p-7,
+    .glass-deep.p-6{padding:.9rem!important}
+    .rounded-3xl.p-12,
+    .rounded-3xl.p-10,
+    .rounded-3xl.p-8{padding:1rem!important}
+    #showsGrid .p-6{padding:.9rem!important}
+  }
+
+  /* 尊重系統「減少動態效果」設定 */
   @media (prefers-reduced-motion: reduce){
-    .contact-fab::before{animation:none}
+    .contact-fab::before,
+    .wa-float::before,
+    .particle,
+    .speed-line,
+    .star-dust{animation:none!important}
+    .js .reveal{transition:none;opacity:1;transform:none}
   }
 </style>
 </head>
