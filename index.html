@@ -2175,7 +2175,7 @@
 
       var tagHtml;
       if (m.mine) tagHtml = '<span class="tag-pill tag-hot">' + tr('我的留言') + '</span>';
-      else if (m.source === 'auto' || !m.mine) tagHtml = '<span class="tag-pill tag-new">' + tr('成功搶票（示範）') + '</span>';
+      else if (m.source === 'auto' || !m.mine) tagHtml = '<span class="tag-pill tag-new">' + tr('成功搶票') + '</span>';
       else tagHtml = '<span class="tag-pill tag-new">' + tr('成功搶票') + '</span>';
 
       var stageLine = esc(tr(m.stage || '')) + (m.saleDate ? ' · ' + esc(formatDay(m.saleDate)) : '');
@@ -2257,8 +2257,8 @@
       fetchServerMessages().then(function (arr) {
         if (arr) serverMessages = arr;
         render();
-        refreshBtn.innerHTML = '<i class="fa fa-refresh mr-2"></i>' + tr('重新生成');
-        if (window.__tkToast) window.__tkToast(tr('已重新生成今日留言'));
+        refreshBtn.innerHTML = '<i class="fa fa-refresh mr-2"></i>' + tr('最新留言');
+        if (window.__tkToast) window.__tkToast(tr('最新留言 今日留言'));
       });
     });
   }
