@@ -762,7 +762,7 @@
         <div class="text-center">
           <div class="w-24 h-24 mx-auto rounded-full bg-green/15 border border-green/35 flex items-center justify-center"><i class="fa fa-telegram text-5xl text-green"></i></div>
           <p class="text-blush/70 text-sm mt-6">點擊下方按鈕直接對話</p>
-          <p class="text-2xl font-extrabold text-white mt-1 tracking-wide" data-contact-text="phone"></p>
+          <p class="text-2xl font-extrabold text-white mt-1 tracking-wide">Telegram 官方客服</p>
           <a href="#" data-contact-href="telegramUrl" target="_blank" rel="noopener noreferrer" class="tg-btn inline-flex items-center justify-center gap-2 text-white font-bold py-4 px-10 rounded-full text-lg mt-6 w-full sm:w-auto">
             <i class="fa fa-telegram text-xl"></i> Telegram 即時查詢
           </a>
@@ -834,7 +834,6 @@
         <li><a href="#" data-contact-href="telegramUrl" target="_blank" rel="noopener noreferrer" class="hover:text-green transition"><i class="fa fa-telegram mr-2 text-green"></i>Telegram 查詢</a></li>
         <li><i class="fa fa-qq mr-2 text-rose"></i>QQ <span data-contact-text="qq"></span></li>
         <li><i class="fa fa-bell mr-2 text-magenta"></i>釘釘 <span data-contact-text="dingtalk"></span></li>
-        <li><i class="fa fa-phone mr-2 text-magenta"></i> <span data-contact-text="phone"></span></li>
         <li><i class="fa fa-envelope mr-2 text-rose"></i> <span data-contact-text="email"></span></li>
       </ul>
     </div>
@@ -855,7 +854,7 @@
 
   <a href="#" data-contact-href="telegramUrl" target="_blank" rel="noopener noreferrer" class="contact-item flex items-center gap-3 p-3 rounded-xl bg-green/10 border border-green/30 hover:bg-green/20 mb-3">
     <i class="fa fa-telegram text-2xl text-green" aria-hidden="true"></i>
-    <div class="flex-1 min-w-0"><div class="font-bold text-white text-sm">Telegram</div><div class="text-xs text-blush/70 truncate" data-contact-text="phone"></div></div>
+    <div class="flex-1 min-w-0"><div class="font-bold text-white text-sm">Telegram</div><div class="text-xs text-blush/70 truncate">點擊直接對話</div></div>
     <i class="fa fa-external-link text-blush/50 text-xs" aria-hidden="true"></i>
   </a>
 
@@ -888,7 +887,7 @@
       <textarea id="dtMessage" name="message" placeholder="想搶的場次或留言…" maxlength="300" rows="2" required class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-blush/40 focus:border-magenta/50 resize-none transition"></textarea>
       <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
       <button type="submit" class="contact-send w-full text-sm font-bold py-2 rounded-lg btn-primary text-white"><i class="fa fa-paper-plane mr-1" aria-hidden="true"></i>複製留言內容</button>
-      <p class="text-[10px] text-blush/50 text-center leading-relaxed">留言將複製到剪貼簿，請到 Telegram <span data-contact-text="phone"></span>、QQ <span data-contact-text="qq"></span> 或釘釘搜尋 <span class="text-magenta font-semibold" data-contact-text="dingtalk"></span> 粘貼發送</p>
+      <p class="text-[10px] text-blush/50 text-center leading-relaxed">留言將複製到剪貼簿，請到 Telegram、QQ <span data-contact-text="qq"></span> 或釘釘搜尋 <span class="text-magenta font-semibold" data-contact-text="dingtalk"></span> 粘貼發送</p>
     </form>
   </div>
 </div>
@@ -912,13 +911,15 @@
     autoDetectEnv: false,
 
     contact: {
-      telegram:    '+85267545772',
+      // telegram 欄位原本存放電話號碼，現已隱藏，不渲染到頁面上
+      telegram:    '',
+      // telegramUrl 保留跳轉功能；如需徹底移除號碼，請改用用戶名連結，
+      // 例如 'https://t.me/你的用戶名'
       telegramUrl: 'https://t.me/+85267545772',
       qq:          '3839562550',
       qqDeepLink:  'tencent://message/?uin=3839562550&Site=&Menu=yes',
       dingtalk:    'ticketkiller',
       dingtalkDeepLink: 'dingtalk://dingtalkclient/action/sendmsg?dingtalk_id=ticketkiller',
-      phone:       '+852 6754 5772',
       email:       'support@ticketkiller.com',
       serviceStart: 10,
       serviceEnd:   23
@@ -1605,6 +1606,8 @@
         ? tr('⚡ 開賣中 · 立即前往官網')
         : (phase.phase === 'post' ? tr('已結束 · 前往官網') : esc(tr(hostLabel)));
 
+      var telegramUrlCfg = (window.TK_CONFIG && window.TK_CONFIG.contact && window.TK_CONFIG.contact.telegramUrl) || '#';
+
       html +=
         '<div class="glass-deep rounded-2xl glow-border card-hover flex flex-col reveal visible overflow-hidden">' +
           '<div class="p-6 flex flex-col flex-1">' +
@@ -1631,7 +1634,7 @@
               ? '<a href="' + esc(ticketUrl) + '" target="_blank" rel="noopener noreferrer" class="' + officialCls + '" aria-label="' + esc(officialText) + '">' +
                 '<i class="fa ' + officialIcon + ' mr-2"></i>' + officialText + '</a>'
               : '') +
-            '<a href="https://t.me/+85267545772?text=' + waText + '" target="_blank" rel="noopener noreferrer" ' +
+            '<a href="' + esc(telegramUrlCfg) + '?text=' + waText + '" target="_blank" rel="noopener noreferrer" ' +
                'class="mt-3 block text-center btn-primary text-white py-2.5 rounded-full text-sm font-bold">' +
               '<i class="fa fa-shopping-cart mr-2"></i>' + tr('單次購買此場次') +
             '</a>' +
@@ -2632,7 +2635,7 @@
             var C = (window.TK_CONFIG && window.TK_CONFIG.contact) || {};
             var content =
               '【ticketkiller 留言】\n' +
-              'Telegram：' + (C.telegram || '') + '\n' +
+              'Telegram：' + (C.telegramUrl || '') + '\n' +
               'QQ：' + (C.qq || '') + '\n' +
               '釘釘：' + (C.dingtalk || '') + '\n' +
               '姓名：' + (name || '未填寫') + '\n' +
@@ -2652,7 +2655,7 @@
         var C2 = (window.TK_CONFIG && window.TK_CONFIG.contact) || {};
         var content2 =
           '【ticketkiller 留言】\n' +
-          'Telegram：' + (C2.telegram || '') + '\n' +
+          'Telegram：' + (C2.telegramUrl || '') + '\n' +
           'QQ：' + (C2.qq || '') + '\n' +
           '釘釘：' + (C2.dingtalk || '') + '\n' +
           '姓名：' + (name || '未填寫') + '\n' +
