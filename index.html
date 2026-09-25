@@ -605,12 +605,12 @@
     <div class="text-center mb-10 reveal">
       <span class="text-green/85 font-semibold tracking-widest text-sm">SUCCESS WALL</span>
       <h2 class="text-[clamp(2rem,5vw,3.2rem)] font-bold mt-2"><span class="text-gradient">成功搶票留言區</span></h2>
-      <p class="text-blush/75 max-w-2xl mx-auto text-lg mt-3">每日自動生成 · 對應本頁 <span class="text-green font-bold">12 場演唱會</span> 全部發售日</p>
+      <p class="text-blush/75 max-w-2xl mx-auto text-lg mt-3">每日自動生成 · 只顯示 <span class="text-green font-bold">已開始售票</span> 場次的留言</p>
     </div>
 
     <div class="max-w-3xl mx-auto mb-6 demo-banner reveal">
       <i class="fa fa-info-circle mr-1"></i>
-      此區為 <span class="text-white font-bold">示範數據</span>，每日按香港時間自動生成，並非真實用戶留言。你的本機留言僅儲存於你的瀏覽器。
+      此區為 <span class="text-white font-bold">示範數據</span>，每日按香港時間自動生成，並非真實用戶留言。未開售的場次會自動隱藏；你的本機留言僅儲存於你的瀏覽器。
     </div>
 
     <div class="max-w-6xl mx-auto mb-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm reveal">
@@ -655,16 +655,28 @@
     <div class="max-w-3xl mx-auto">
       <div class="timeline-item reveal">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="version-tag">v1.36.0</span>
+          <span class="version-tag">v1.37.0</span>
           <span class="text-blush/65 text-sm"><i class="fa fa-calendar-o mr-1"></i>2026-09-25</span>
           <span class="tag-pill tag-new">最新</span>
+        </div>
+        <h4 class="text-white/95 font-bold mt-3">留言區只顯示已開售場次</h4>
+        <ul class="text-blush/80 text-sm mt-3 space-y-2">
+          <li><span class="tag-pill tag-opt mr-2">優化</span>留言區只為 <span class="text-white font-bold">已開始售票</span>（優先購票或公開發售已到時間）的場次生成留言</li>
+          <li><span class="tag-pill tag-opt mr-2">優化</span>未開售場次的留言自動隱藏，隨時間推移到開售日會自動出現</li>
+          <li><span class="tag-pill tag-opt mr-2">優化</span>判斷精確到分鐘，與場次卡片的「開賣中」狀態完全同步</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="version-tag">v1.36.0</span>
+          <span class="text-blush/65 text-sm"><i class="fa fa-calendar-o mr-1"></i>2026-09-25</span>
         </div>
         <h4 class="text-white/95 font-bold mt-3">Telegram Bot 直發 · 留言區後端 API</h4>
         <ul class="text-blush/80 text-sm mt-3 space-y-2">
           <li><span class="tag-pill tag-new mr-2">新增</span>聯絡表單可直接發送到 Telegram Bot（配置後啟用，失敗自動降級為複製）</li>
           <li><span class="tag-pill tag-new mr-2">新增</span>留言區可接入後端 API，支援跨裝置同步留言與點讚</li>
           <li><span class="tag-pill tag-opt mr-2">優化</span>提交按鈕加入 spinner 與禁用狀態，防止重複提交</li>
-          <li><span class="tag-pill tag-opt mr-2">優化</span>所有聯絡資訊集中到 <code class="text-green">TK_CONFIG.contact</code>，改一處全站生效</li>
         </ul>
       </div>
 
@@ -680,7 +692,6 @@
           <li><span class="tag-pill tag-new mr-2">新增</span>「加入日曆」按鈕，一鍵下載 .ics 提醒</li>
           <li><span class="tag-pill tag-new mr-2">新增</span>動態注入 JSON-LD <code class="text-green">Event</code> 結構化資料</li>
           <li><span class="tag-pill tag-new mr-2">新增</span>Open Graph / Twitter Card meta 標籤</li>
-          <li><span class="tag-pill tag-opt mr-2">優化</span>所有外鏈補齊 <code class="text-green">rel="noopener noreferrer"</code></li>
         </ul>
       </div>
 
@@ -694,7 +705,7 @@
           <li><span class="tag-pill tag-new mr-2">新增</span>所有聯絡渠道全面改用 Telegram</li>
           <li><span class="tag-pill tag-new mr-2">新增</span>場次卡片自動展開全部搶票日期</li>
           <li><span class="tag-pill tag-new mr-2">新增</span>搶票當日「前往官網」按鈕自動閃動提示</li>
-          <li><span class="tag-pill tag-new mr-2">新增</span>「成功搶票留言區」每日按 HKT 自動生成 12 場演唱會全部發售日留言</li>
+          <li><span class="tag-pill tag-new mr-2">新增</span>「成功搶票留言區」每日按 HKT 自動生成留言</li>
         </ul>
       </div>
 
@@ -708,7 +719,6 @@
           <ul class="text-blush/80 text-sm mt-3 space-y-2">
             <li><span class="tag-pill tag-new mr-2">新增</span>公售日期判斷統一使用 Asia/Hong_Kong 時區</li>
             <li><span class="tag-pill tag-new mr-2">新增</span>整合式「聯絡」浮動按鈕（Telegram / QQ / 釘釘）</li>
-            <li><span class="tag-pill tag-opt mr-2">優化</span>聯絡面板支援 ESC 關閉、點擊外部關閉、焦點陷阱</li>
           </ul>
         </div>
         <div class="timeline-item">
@@ -901,7 +911,6 @@
     debug: false,
     autoDetectEnv: false,
 
-    /* ===== 聯絡資訊集中管理：改這裡，全站同步更新 ===== */
     contact: {
       telegram:    '+85267545772',
       telegramUrl: 'https://t.me/+85267545772',
@@ -915,19 +924,12 @@
       serviceEnd:   23
     },
 
-    /* ===== Telegram Bot 直接發送（可選） =====
-       啟用後，聯絡面板的留言表單會直接發送到你的 Telegram。
-       取得方式：
-         1) 在 Telegram 搜尋 @BotFather，建立 Bot，取得 token
-         2) 在 Telegram 搜尋 @userinfobot，取得你的 chat_id
-    */
     telegramBot: {
       enabled: false,
       token:   '',
       chatId:  ''
     },
 
-    /* ===== 留言區後端 API（可選） ===== */
     wallApi: {
       enabled:  false,
       baseUrl:  '',
@@ -1855,7 +1857,7 @@
 
 
 <!-- ============================================================
-     第三部分：成功搶票留言區
+     第三部分：成功搶票留言區（★ 只顯示已開售場次）
      ============================================================ -->
 <script>
 (function () {
@@ -1962,14 +1964,56 @@
     }
     return [];
   }
+
+  /* ============================================================
+     ★★★ 只收集「已開始售票」的日期 ★★★
+     判斷邏輯：
+       - 日期已過 → 已開售
+       - 日期未到 → 未開售
+       - 今天：精確到分鐘判斷，時間未公佈則保守視為已開售
+     ============================================================ */
   function collectSaleDates(s) {
     var arr = [];
+    var now = Date.now();
+    var today = todayHKT();
+    var parseFn = (window.__showsSystem && window.__showsSystem.parseHKTTime) || null;
+
+    /* 判斷某個發售日期是否「已開始售票」 */
+    function isStarted(dateStr, timeStr) {
+      if (!dateStr) return false;
+
+      // 日期已過 → 已開售
+      if (dateStr < today) return true;
+      // 日期未到 → 未開售
+      if (dateStr > today) return false;
+
+      // 今天：判斷時間
+      if (!timeStr || !/\d{1,2}:\d{2}/.test(timeStr)) {
+        // 時間未公佈，保守視為已開售（當天）
+        return true;
+      }
+      if (parseFn) {
+        var dt = parseFn(dateStr, timeStr);
+        if (dt && dt.getTime() <= now) return true;
+        return false;
+      }
+      return true;
+    }
+
+    // 優先購票：只保留已開售的
     if (s.prioritySales && s.prioritySales.length) {
       s.prioritySales.forEach(function (p) {
-        if (p && p.date) arr.push({ date: p.date, stage: p.stage || '優先購票', type: 'priority' });
+        if (p && p.date && isStarted(p.date, p.time)) {
+          arr.push({ date: p.date, stage: p.stage || '優先購票', type: 'priority' });
+        }
       });
     }
-    if (s.publicSaleDate) arr.push({ date: s.publicSaleDate, stage: '公開發售', type: 'public' });
+
+    // 公開發售：只保留已開售的
+    if (s.publicSaleDate && isStarted(s.publicSaleDate, s.publicSaleTime)) {
+      arr.push({ date: s.publicSaleDate, stage: '公開發售', type: 'public' });
+    }
+
     return arr;
   }
 
@@ -1977,6 +2021,9 @@
     var out = [];
     shows.forEach(function (s) {
       var dates = collectSaleDates(s);
+      // 沒有已開售日期 → 該場次不生成留言
+      if (!dates.length) return;
+
       dates.forEach(function (d, di) {
         var seed = hash(todayStr + '|' + (s.id || s.name) + '|' + d.date + '|' + di);
         var name = NAMES[seed % NAMES.length];
@@ -2232,6 +2279,9 @@
     var shows = getAllShows();
     var opts = '<option value="">' + tr('請選擇場次（可選）') + '</option>';
     shows.forEach(function (s) {
+      // 只顯示已開售的場次
+      var dates = collectSaleDates(s);
+      if (!dates.length) return;
       opts += '<option value="' + esc(s.name) + '">' + esc(tr(s.name)) + '</option>';
     });
     showSelect.innerHTML = opts;
