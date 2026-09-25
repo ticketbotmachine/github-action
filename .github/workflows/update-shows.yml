@@ -1,13 +1,16 @@
-name: Update concerts.json
+name: Update concerts.json daily
 
 on:
   schedule:
-    - cron: '0 19 * * *'   # 每天 UTC 19:00（即 HKT 03:00）
+    # 每天 UTC 19:00 = HKT 03:00
+    - cron: '0 19 * * *'
   workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,16 +20,20 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm install node-fetch@3
+      - name: Run updater
+        run: node scripts/update-concerts.mjs
+        env:
+          # 若需要串接第三方 API，可在此加入 secret
+          SOME_API_KEY: ${{ secrets.SOME_API_KEY }}
 
-      - name: Fetch latest shows
-        run: node scripts/update-shows.js
-
-      - name: Commit and push
+      - name: Commit & push if changed
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add data/concerts.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update concerts.json"
-          git push
+          git config user.name "ticketkiller-bot"
+          git config user.email "bot@ticketkiller.com"
+          if [ -n "$(git status --porcelain data/concerts.json)" ]; then
+            git add data/concerts.json
+            git commit -m "chore: auto update concerts.json $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "No changes"
+          fi
