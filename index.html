@@ -2043,7 +2043,8 @@
           key: 'auto|' + (s.id || s.name) + '|' + d.date + '|' + di,
           name: name, text: text, showName: s.name, stage: d.stage,
           saleDate: d.date, isPublic: d.type === 'public', likes: likes,
-          time: pad2(hh) + ':' + pad2(mm), hue: seed % 360, mine: false, source: 'auto'
+          time: pad2(hh) + ':' + pad2(mm), hue: seed % 360, mine: false, source: 'auto',
+          genDate: todayStr   /* ★ 新增：標記生成日期，用於跨天淘汰舊自動留言 */
         });
       });
     });
@@ -2123,17 +2124,35 @@
 
   var renderedMessages = [];
 
+  /* ============================================================
+     ★★★ 合併留言：自動留言只保留「當天生成」，本機/後端留言按已開售日期過濾 ★★★
+     ============================================================ */
   function buildAll() {
     var today = todayHKT();
     var shows = getAllShows();
-    var auto = buildAutoMessages(shows, today);
 
-    var merged;
-    if (serverMessages && serverMessages.length) {
-      merged = serverMessages.concat(auto);
-    } else {
-      merged = loadMine().concat(auto);
-    }
+    // 收集「已開售」的日期集合（用於過濾本機/後端留言）
+    var validSaleDates = {};
+    shows.forEach(function (s) {
+      collectSaleDates(s).forEach(function (d) { validSaleDates[d.date] = true; });
+    });
+
+    // 自動留言：只保留今天生成的（跨天自動淘汰舊一批）
+    var auto = buildAutoMessages(shows, today).filter(function (m) {
+      return m.genDate === today;
+    });
+
+    // 本機留言：只保留 saleDate 對應場次仍「已開售」的
+    var mine = loadMine().filter(function (m) {
+      return m.saleDate && validSaleDates[m.saleDate];
+    });
+
+    // 後端留言：同樣按已開售日期過濾
+    var srv = (serverMessages || []).filter(function (m) {
+      return m.saleDate && validSaleDates[m.saleDate];
+    });
+
+    var merged = (srv.length ? srv : mine).concat(auto);
 
     merged.sort(function (a, b) {
       var da = String(a.saleDate || '9999-99-99');
@@ -2181,7 +2200,6 @@
 
       var tagHtml;
       if (m.mine) tagHtml = '<span class="tag-pill tag-hot">' + tr('我的留言') + '</span>';
-      else if (m.source === 'auto' || !m.mine) tagHtml = '<span class="tag-pill tag-new">' + tr('成功搶票') + '</span>';
       else tagHtml = '<span class="tag-pill tag-new">' + tr('成功搶票') + '</span>';
 
       var stageLine = esc(tr(m.stage || '')) + (m.saleDate ? ' · ' + esc(formatDay(m.saleDate)) : '');
@@ -2417,6 +2435,9 @@
 
   /* 留言區刷新：優先走場次系統（它會連帶重繪留言區），否則自己 render */
   function refreshWallByDaily() {
+    // ★ 每天刷新時重置後端留言引用，強制重新拉取，避免舊留言殘留
+    serverMessages = null;
+
     if (window.__showsSystem && typeof window.__showsSystem.refresh === 'function') {
       // 場次系統重新拉資料 → 完成後會自動 rerender 留言區（見第二部份 renderShows 末尾）
       window.__showsSystem.refresh();
@@ -2481,7 +2502,7 @@
   function init() {
     fillShowSelect();
 
-    lastWallRefreshDay = getHKTToday();   // ← 新增：初始化當天的標記
+    lastWallRefreshDay = getHKTToday();   // ← 初始化當天的標記
 
     if (getWallApi()) {
       render();
@@ -2493,7 +2514,7 @@
       render();
     }
 
-    scheduleWallDaily();                  // ← 新增：啟動留言區每日 03:00 刷新
+    scheduleWallDaily();                  // ← 啟動留言區每日 03:00 刷新
   }
 
   if (document.readyState === 'loading') {
