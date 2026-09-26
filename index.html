@@ -1661,6 +1661,11 @@
 
     startCountdown();
 
+    // ★ 場次資料已更新完畢，通知留言區重新生成（只保留已開售場次）
+    if (window.__wallSystem && typeof window.__wallSystem.rerender === 'function') {
+      try { window.__wallSystem.rerender(); } catch (e) {}
+    }
+
     if (typeof window.__revealAll === 'function') {
       setTimeout(window.__revealAll, 60);
     }
@@ -1825,10 +1830,8 @@
     var delay = Math.max(60000, next.getTime() - hktNow.getTime());
     setTimeout(function () {
       try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+      // 載入完成後會自動觸發留言區 rerender（見 renderShows 末尾）
       loadShows(false);
-      if (window.__wallSystem && typeof window.__wallSystem.rerender === 'function') {
-        window.__wallSystem.rerender();
-      }
       scheduleDailyCheck();
     }, delay);
   }
@@ -2388,6 +2391,74 @@
     });
   }
 
+  /* ============================================================
+     ★ 留言區獨立的每日 03:00 刷新（方案 B）
+     ============================================================ */
+  var wallDailyTimer = null;
+  var lastWallRefreshDay = null;   // 記錄上次刷新是哪一天（HKT）
+
+  /* 取得 HKT 今天的 YYYY-MM-DD */
+  function getHKTToday() {
+    try {
+      var parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Hong_Kong', year: 'numeric', month: '2-digit', day: '2-digit'
+      }).formatToParts(new Date());
+      var y = '', m = '', d = '';
+      for (var i = 0; i < parts.length; i++) {
+        if (parts[i].type === 'year')  y = parts[i].value;
+        if (parts[i].type === 'month') m = parts[i].value;
+        if (parts[i].type === 'day')   d = parts[i].value;
+      }
+      if (y && m && d) return y + '-' + m + '-' + d;
+    } catch (e) {}
+    var now = new Date();
+    return now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
+  }
+
+  /* 留言區刷新：優先走場次系統（它會連帶重繪留言區），否則自己 render */
+  function refreshWallByDaily() {
+    if (window.__showsSystem && typeof window.__showsSystem.refresh === 'function') {
+      // 場次系統重新拉資料 → 完成後會自動 rerender 留言區（見第二部份 renderShows 末尾）
+      window.__showsSystem.refresh();
+    } else {
+      // 兜底：直接重繪留言區
+      showAll = false;
+      render();
+    }
+  }
+
+  /* 排下一次 03:00（HKT） */
+  function scheduleWallDaily() {
+    if (wallDailyTimer) clearTimeout(wallDailyTimer);
+
+    var now = new Date();
+    var hktNow;
+    try { hktNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Hong_Kong' })); }
+    catch (e) { hktNow = new Date(now); }
+
+    var next = new Date(hktNow);
+    next.setHours(3, 0, 0, 0);
+    if (next <= hktNow) next.setDate(next.getDate() + 1);
+
+    var delay = Math.max(60000, next.getTime() - hktNow.getTime());
+
+    wallDailyTimer = setTimeout(function () {
+      refreshWallByDaily();
+      lastWallRefreshDay = getHKTToday();
+      scheduleWallDaily();   // 遞歸排下一次
+    }, delay);
+  }
+
+  /* 頁面重新可見時補償：若跨過了 03:00 但沒刷新，就補一次 */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') return;
+    var today = getHKTToday();
+    if (lastWallRefreshDay && lastWallRefreshDay !== today) {
+      refreshWallByDaily();
+      lastWallRefreshDay = today;
+    }
+  });
+
   window.__wallSystem = {
     rerender: function () { render(); },
     rebuild: function () { showAll = false; render(); },
@@ -2397,11 +2468,20 @@
         render();
       });
     },
+    dailyRefresh: function () {          // ← 新增：供外部手動觸發每日刷新
+      refreshWallByDaily();
+      lastWallRefreshDay = getHKTToday();
+    },
+    getLastRefreshDay: function () {     // ← 新增：調試用
+      return lastWallRefreshDay;
+    },
     getMessages: function () { return renderedMessages.slice(); }
   };
 
   function init() {
     fillShowSelect();
+
+    lastWallRefreshDay = getHKTToday();   // ← 新增：初始化當天的標記
 
     if (getWallApi()) {
       render();
@@ -2412,6 +2492,8 @@
     } else {
       render();
     }
+
+    scheduleWallDaily();                  // ← 新增：啟動留言區每日 03:00 刷新
   }
 
   if (document.readyState === 'loading') {
